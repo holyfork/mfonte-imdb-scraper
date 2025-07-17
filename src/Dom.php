@@ -43,7 +43,7 @@ class Dom
     ];
 
     private static $emptyHtml = '<!DOCTYPE html><html lang="en-US" xmlns:og="http://opengraphprotocol.org/schema/"><head><title>IMDb</title></head><body><p></p></body></html>';
-    
+
     /**
      * Fetch and parse the DOM of a remote site
      *
@@ -182,7 +182,9 @@ class Dom
             'verify' => false,
         ];
 
-        if (isset($options['guzzleLogFile']) && $options['guzzleLogFile'] !== null) {
+        if (isset($options['guzzle'])) {
+            $client = $options['guzzle'];
+        } elseif (isset($options['guzzleLogFile']) && $options['guzzleLogFile'] !== null) {
             // if the file does not exist, try and create it
             if (!file_exists($options['guzzleLogFile'])) {
                 @touch($options['guzzleLogFile']);
@@ -208,10 +210,15 @@ class Dom
             $client = new Client($clientOpts);
         }
 
-        // Add custom headers to the request
-        $response = $client->request('GET', $url, [
-            'headers' => $this->createGuzzleHeaders($options),
-        ]);
+        if (isset($options['guzzleOpts'])) {
+            // Add custom headers to the request
+            $response = $client->request('GET', $url, $options['guzzleOpts']);
+        } else {
+            // Add custom headers to the request
+            $response = $client->request('GET', $url, [
+                'headers' => $this->createGuzzleHeaders($options),
+            ]);
+        }
 
         // handle the response
         if ($response->getStatusCode() === 200) {
