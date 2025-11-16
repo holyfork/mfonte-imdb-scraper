@@ -187,7 +187,7 @@ class Parser
     public function getMetadata(HtmlDomParser $dom) : array
     {
         $scripts = $dom->findMultiOrFalse('script');
-        foreach ($scripts as $script) {
+        foreach ((array) $scripts as $script) {
             if ($script->getAttribute('type') === 'application/ld+json') {
                 $json = json_decode($script->innerText(), true);
                 if (json_last_error() === JSON_ERROR_NONE) {
@@ -1051,3 +1051,4 @@ class Parser
         }
     }
 }
+
